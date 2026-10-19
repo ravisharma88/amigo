@@ -40,14 +40,14 @@ public class ChatAgent {
     public ChatClient chatClient(
             ChatClient.Builder builder,
             Advisor chatMemoryAdvisor,
-            ToolCallbackProvider weatherTools,
+            ToolCallbackProvider tools,
             @Value("${amigo.agent.system-prompt}") String systemPrompt,
             @Value("${spring.ai.openai.chat.options.model}") String model) {
         return builder
                 .defaultSystem(systemPrompt)
                 .defaultOptions(OpenAiChatOptions.builder().model(model))
                 .defaultAdvisors(chatMemoryAdvisor)
-                .defaultTools(weatherTools)
+                .defaultTools(tools)
                 .build();
     }
 }

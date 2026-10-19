@@ -17,10 +17,27 @@ spring:
               args:
                 - -y
                 - "@dangahagan/weather-mcp@latest"
+            newsmcp:
+              command: uvx
+              args:
+                - --with
+                - "mcp<2"
+                - --from
+                - git+https://github.com/berlinbra/news-api-mcp
+                - news-api-mcp
+              env:
+                NEWS_API_KEY: ${NEWS_API_KEY}
+            sports:
+              command: uvx
+              args:
+                - sportsdata-mcp
+                - serve
+              env:
+                SPORTSDATA_MCP_GROUPS: espn.scores
 
 amigo:
   agent:
-    system-prompt: ${AMIGO_SYSTEM_PROMPT:You are a helpful and friendly assistant. Answer clearly and accurately. Use the weather tools for current weather and forecasts; do not guess current conditions.}
+    system-prompt: ${AMIGO_SYSTEM_PROMPT:You are a helpful and friendly assistant. Answer clearly and accurately. Use the news tools for current news, weather tools for current weather and forecasts, and soccer tools for current soccer information. Do not guess current events, conditions, scores, or schedules.}
     memory:
       max-messages: ${CHAT_MEMORY_MAX_MESSAGES:20}
 
