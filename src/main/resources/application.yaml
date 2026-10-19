@@ -7,6 +7,22 @@ spring:
       chat:
         options:
           model: ${OPENAI_MODEL:gpt-4o-mini}
+    mcp:
+      client:
+        type: SYNC
+        stdio:
+          connections:
+            weather:
+              command: npx
+              args:
+                - -y
+                - "@dangahagan/weather-mcp@latest"
+
+amigo:
+  agent:
+    system-prompt: ${AMIGO_SYSTEM_PROMPT:You are a helpful and friendly assistant. Answer clearly and accurately. Use the weather tools for current weather and forecasts; do not guess current conditions.}
+    memory:
+      max-messages: ${CHAT_MEMORY_MAX_MESSAGES:20}
 
 management:
   endpoints:
