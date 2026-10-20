@@ -1,0 +1,47 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1-create-chat-memory
+      author: amigo
+      changes:
+        - createTable:
+            tableName: SPRING_AI_CHAT_MEMORY
+            columns:
+              - column:
+                  name: conversation_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: SPRING_AI_CHAT_MEMORY_PK
+              - column:
+                  name: sequence_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: SPRING_AI_CHAT_MEMORY_PK
+              - column:
+                  name: content
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: type
+                  type: VARCHAR(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: timestamp
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+        - sql:
+            sql: ALTER TABLE SPRING_AI_CHAT_MEMORY ADD CONSTRAINT SPRING_AI_CHAT_MEMORY_TYPE_CHECK CHECK (type IN ('USER', 'ASSISTANT', 'SYSTEM', 'TOOL'))
+        - createIndex:
+            tableName: SPRING_AI_CHAT_MEMORY
+            indexName: SPRING_AI_CHAT_MEMORY_CONVERSATION_ID_TIMESTAMP_IDX
+            columns:
+              - column:
+                  name: conversation_id
+              - column:
+                  name: timestamp
