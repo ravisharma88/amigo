@@ -37,8 +37,20 @@ spring:
                 - serve
               env:
                 SPORTSDATA_MCP_GROUPS: espn.scores
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope:
+              - openid
+              - email
+              - profile
 
 amigo:
+  frontend-url: ${AMIGO_FRONTEND_URL:http://localhost:5173}
   agent:
     system-prompt: ${AMIGO_SYSTEM_PROMPT:You are a helpful and friendly assistant. Answer clearly and accurately. Use the news tools for current news, weather tools for current weather and forecasts, and soccer tools for current soccer information. Do not guess current events, conditions, scores, or schedules.}
     memory:
