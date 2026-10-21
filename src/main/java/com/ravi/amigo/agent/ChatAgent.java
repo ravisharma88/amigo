@@ -1,66 +1,39 @@
 package com.ravi.amigo.agent;
 
-import javax.sql.DataSource;
-
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.api.Advisor;
 import org.springframework.ai.chat.memory.ChatMemory;
-import org.springframework.ai.chat.memory.ChatMemoryRepository;
-import org.springframework.ai.chat.memory.InMemoryChatMemoryRepository;
-import org.springframework.ai.chat.memory.MessageWindowChatMemory;
-import org.springframework.ai.chat.memory.repository.jdbc.JdbcChatMemoryRepository;
-import org.springframework.ai.openai.OpenAiChatOptions;
-import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
 
-@Configuration
+import java.util.Locale;
+
+@Service
 public class ChatAgent {
 
-    @Bean
-    @Profile("!local")
-    public ChatMemoryRepository chatMemoryRepository() {
-        return new InMemoryChatMemoryRepository();
+    public static final String SYSTEM_PROMPT = """
+    You are a helpful and friendly assistant. Answer clearly and accurately. Use the news tools for current news, weather tools for current weather and forecasts, and soccer tools for current soccer information. Do not guess current events, conditions, scores, or schedules
+    """;
+
+    @Value("${amigo.agent.system-prompt:#{T(com.ravi.amigo.agent.ChatAgent).SYSTEM_PROMPT}}") String systemPrompt;
+
+    private final ChatClient chatClient;
+
+    private final Advisor chatMemoryAdvisor;
+
+    public ChatAgent(ChatClient chatClient, Advisor chatMemoryAdvisor) {
+        this.chatClient = chatClient;
+        this.chatMemoryAdvisor = chatMemoryAdvisor;
     }
 
-    @Bean
-    @Profile("local")
-    public ChatMemoryRepository jdbcChatMemoryRepository(DataSource dataSource) {
-        return JdbcChatMemoryRepository.builder()
-                .dataSource(dataSource)
-                .build();
-    }
-
-    @Bean
-    public ChatMemory chatMemory(
-            ChatMemoryRepository repository,
-            @Value("${amigo.agent.memory.max-messages:20}") int maxMessages) {
-        return MessageWindowChatMemory.builder()
-                .chatMemoryRepository(repository)
-                .maxMessages(maxMessages)
-                .build();
-    }
-
-    @Bean
-    public Advisor chatMemoryAdvisor(ChatMemory chatMemory) {
-        return MessageChatMemoryAdvisor.builder(chatMemory).build();
-    }
-
-    @Bean
-    public ChatClient chatClient(
-            ChatClient.Builder builder,
-            Advisor chatMemoryAdvisor,
-            ToolCallbackProvider tools,
-            @Value("${amigo.agent.system-prompt}") String systemPrompt,
-            @Value("${spring.ai.openai.chat.options.model}") String model) {
-        return builder
-                .defaultSystem(systemPrompt)
-                .defaultOptions(OpenAiChatOptions.builder().model(model))
-                .defaultAdvisors(chatMemoryAdvisor)
-                .defaultTools(tools)
-                .build();
+    public String chat(String message, String email) {
+        return chatClient.prompt()
+                .system(systemPrompt)
+                .user(message)
+                .advisors(chatMemoryAdvisor)
+                .advisors(advisors -> advisors.param(
+                        ChatMemory.CONVERSATION_ID, email.toLowerCase(Locale.ROOT)))
+                .call()
+                .content();
     }
 }
