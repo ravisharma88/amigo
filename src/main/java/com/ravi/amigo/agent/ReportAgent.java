@@ -8,10 +8,7 @@ import org.springframework.stereotype.Service;
 public class ReportAgent {
 
     private static final String SYSTEM = """
-            You create a report for the user based on user's findings provided to you. 
-            Create a clear and concise report from the findings.Do not add facts that are not
-            present in the findings;Do not call tools during
-            this summarization step.
+            You summarize the findings provided to you by the user.Do not ask any further question.Do not call any tools.Dont any other fact apart from the details provided to you.
             """;
 
     private final ChatClient chatClient;
