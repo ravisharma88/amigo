@@ -1,12 +1,10 @@
 package com.ravi.amigo.agent;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.UUID;
-
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 public class ResearchAgent {
