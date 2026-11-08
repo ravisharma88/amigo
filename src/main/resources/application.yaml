@@ -13,6 +13,11 @@ spring:
     mcp:
       client:
         type: SYNC
+        streamable-http:
+          connections:
+            trip-service:
+              url: http://localhost:8081
+              endpoint: /mcp
         stdio:
           connections:
             weather:
